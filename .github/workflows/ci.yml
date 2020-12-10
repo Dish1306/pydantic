@@ -278,6 +278,7 @@ jobs:
               ls -alh;
               ls -alh pydantic/;
               make test;
+              ./coverage.xml;
               #.venv/bin/python -m coverage combine;
               #.venv/bin/python -m coverage xml; "
   deploy:
