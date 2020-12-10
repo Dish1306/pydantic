@@ -258,7 +258,6 @@ jobs:
     env:
       py: /opt/python/${{ matrix.pyver }}/bin/python
       img: quay.io/pypa/manylinux2014_${{ matrix.arch }}
-    needs: pre-deploy
     steps:
     - name: Checkout
       uses: actions/checkout@v2
