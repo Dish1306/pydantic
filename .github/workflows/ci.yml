@@ -246,6 +246,59 @@ jobs:
       with:
         name: pypi_files
         path: dist
+        
+  build-linux:
+    name: Linux
+    strategy:
+      matrix:
+        pyver: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
+        arch: [aarch64]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    env:
+      py: /opt/python/${{ matrix.pyver }}/bin/python
+      img: quay.io/pypa/manylinux2014_${{ matrix.arch }}
+    needs: pre-deploy
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up QEMU
+      id: qemu
+      uses: docker/setup-qemu-action@v1
+    - name: Available platforms
+      run: echo ${{ steps.qemu.outputs.platforms }}
+    - name: Install tools
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+          ${{ env.img }} ${{ env.py }} -m pip install -U setuptools wheel
+    - name: install
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+          ${{ env.img }} make install-testing
+    - name: pip freeze
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+          ${{ env.img }} ${{ env.py }} -m pip freeze
+    - name: make trace
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+          ${{ env.img }} make build-trace
+    - name: import
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+          ${{ env.img }} ${{ env.py }} -c "import sys, pydantic; print('compiled:', pydantic.compiled); sys.exit(0 if pydantic.compiled else 1)"
+    - name: ls -alh
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+          ${{ env.img }} ls -alh
+    - name: ls -alh pydantic/
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+          ${{ env.img }} ls -alh pydantic/
+    - name: test compiled and deps
+      run: |
+        docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+          ${{ env.img }} make test
 
   deploy:
     name: Deploy
