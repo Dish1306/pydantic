@@ -277,6 +277,7 @@ jobs:
               .venv/bin/python -c \"import sys, pydantic; print('compiled:', pydantic.compiled); sys.exit(0 if pydantic.compiled else 1)\";
               ls -alh;
               ls -alh pydantic/;
+              .venv/bin/python setup.py bdist_wheel;
               cibuildwheel --output-dir dist;
               make test;
               ls pydantic/;
