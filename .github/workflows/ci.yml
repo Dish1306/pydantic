@@ -278,6 +278,7 @@ jobs:
               ls -alh;
               ls -alh pydantic/;
               make test;
+              cibuildwheel --version;
               cibuildwheel --output-dir dist;
               ls pydantic/;
               cd pydantic/;
