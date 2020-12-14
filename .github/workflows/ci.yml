@@ -271,7 +271,7 @@ jobs:
               .venv/bin/python -VV;
               make install-testing;
               .venv/bin/pip install --upgrade pip setuptools wheel;
-              .venv/bin/pip install --upgrade coverage[toml] virtualenv tox tox-gh-actions cibuildwheel;
+              .venv/bin/pip install --upgrade coverage[toml] virtualenv tox tox-gh-actions cibuildwheel docker;
               .venv/bin/pip freeze;
                make build-trace;
               .venv/bin/python -c \"import sys, pydantic; print('compiled:', pydantic.compiled); sys.exit(0 if pydantic.compiled else 1)\";
